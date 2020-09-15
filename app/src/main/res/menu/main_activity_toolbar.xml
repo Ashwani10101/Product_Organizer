@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/MainMenuSearchButton"
+        android:icon="@drawable/main_menu_search"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
+        android:id="@+id/MainMenueAddCategory"
+        android:icon="@drawable/main_menu_addcategory"
+        android:title="Add Category"
+        app:showAsAction="always" />
+    <item
+        android:icon="@drawable/main_menu_more_options"
+        android:title="Options"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/MainMenuSORT"
+                android:icon="@drawable/main_menu_sorts"
+                android:title="Sort">
+                <menu>
+                    <item
+                        android:id="@+id/main_menu_sort_by_name"
+                        android:title="by A to Z" />
+                    <item
+                        android:id="@+id/main_menu_sort_by_favorites"
+                        android:title="by Price" />
+                </menu>
+            </item>
+            <item
+                android:id="@+id/MainMenuRefresh"
+                android:icon="@drawable/main_menu_refresh"
+                android:title="Refresh"></item><![CDATA[
+
+
+
+            android:id="@+id/MainMenuAddLink4"
+            android:icon="@drawable/c_rating"
+            android:title="Add From Link"
+            app:showAsAction="always" />
+
+
+        ]]>
+        </menu>
+    </item>
+
+</menu>
