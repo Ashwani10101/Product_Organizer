@@ -23,18 +23,19 @@
                 android:icon="@drawable/main_menu_sorts"
                 android:title="Sort">
                 <menu>
-                    <item
-                        android:id="@+id/main_menu_sort_by_name"
-                        android:title="by A to Z" />
-                    <item
-                        android:id="@+id/main_menu_sort_by_favorites"
-                        android:title="by Price" />
+                    <item android:title="by A to Z" />
+                    <item android:title="by Price" />
                 </menu>
             </item>
             <item
                 android:id="@+id/MainMenuRefresh"
                 android:icon="@drawable/main_menu_refresh"
-                android:title="Refresh"></item><![CDATA[
+                android:title="Refesh Auto Load"></item>
+            <item
+                android:id="@+id/MainMenuClearAll"
+                android:icon="@drawable/main_menu_cancel"
+                android:title="Clear Auto Load"></item><![CDATA[
+
 
 
 
@@ -42,6 +43,7 @@
             android:icon="@drawable/c_rating"
             android:title="Add From Link"
             app:showAsAction="always" />
+
 
 
         ]]>

@@ -40,22 +40,11 @@
                 app:menu="@menu/main_activity_toolbar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tablayout_MainActivity"
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                app:tabIndicatorColor="#FFFFFF"
-                app:tabIndicatorHeight="4dp"
-                app:tabTextColor="#00FFFFFF">
-
-
-            </com.google.android.material.tabs.TabLayout>
-
 
         </LinearLayout>
 
         <Spinner
-            android:id="@+id/spinnerCategorySelector"
+            android:id="@+id/main_spinnerCategorySelector"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:background="@drawable/spinner_bg"
@@ -70,7 +59,6 @@
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigationView"
         android:layout_width="250dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -80,49 +68,284 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/editTextTextPersonName2"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Email" />
+                android:layout_height="150dp"
+                android:background="@color/colorPrimary">
 
-            <EditText
-                android:id="@+id/editTextTextPersonName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Password" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="20dp"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="Logout"
+                    android:textColor="#FFFFFF" />
 
-            <Button
-                android:id="@+id/button"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="10dp"
+                    app:cardCornerRadius="100dp">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        app:srcCompat="@drawable/admin" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toEndOf="@+id/cardview"
+                    android:paddingStart="20dp"
+                    android:paddingTop="10dp"
+                    android:text="Admin Loged in"
+                    android:textAllCaps="true"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Login" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingStart="10dp"
+                    android:text="Home Delivery"
+                    android:textColor="#3E3E3E"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_delivers"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#0C63A8"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Deliverys"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_done"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#06A88D"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Deliverd"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_cancel"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#F4AF25"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Canceled"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingStart="10dp"
+                    android:text="Shop Pickups"
+                    android:textColor="#3E3E3E"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_pickups"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#0C63A8"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Pickups"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_done"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#06A88D"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Picked"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="2dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/drawer_cancel"
+                        android:drawablePadding="15dp"
+                        android:drawableTint="#F4AF25"
+                        android:elevation="2dp"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="20dp"
+                        android:text="Canceled"
+                        android:textColor="#5C5C5C"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="3"
+                        android:gravity="right|center"
+                        android:paddingEnd="10dp"
+                        android:text="00" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <View
-                android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="?android:attr/listDivider" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="263dp"
-                app:srcCompat="@drawable/ic_launcher_background" />
-
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>

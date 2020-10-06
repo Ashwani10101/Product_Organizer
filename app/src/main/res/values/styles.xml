@@ -5,6 +5,26 @@
         <item name="colorPrimary">@color/colorPrimary</item>-
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorHint">#C5C5C5</item>
+    </style>
+
+
+
+    <!-- Sub Activity -->
+    <style name="SubActivityTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowMinWidthMajor">100%</item>
+        <item name="windowMinWidthMinor">100%</item>
+
+    </style>
+
+
+    <!-- Splash Screen-->
+    <style name="MainActivitySplashScreen" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+<!--        <item name="android:windowBackground">@drawable/launch_screen</item>-->
+
     </style>
 
 </resources>
