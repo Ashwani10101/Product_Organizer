@@ -1,4 +1,4 @@
-package com.ash.shopadminlogin.LocalDatabase
+package com.ash.shopadminlogin.database
 
 import android.graphics.Bitmap
 import android.os.Parcel

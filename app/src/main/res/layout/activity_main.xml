@@ -137,6 +137,7 @@
                     android:textSize="12sp" />
 
                 <LinearLayout
+                    android:id="@+id/mainActivity_textviewDeliverys"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -330,7 +331,6 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:id="@+id/textView5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="3"
