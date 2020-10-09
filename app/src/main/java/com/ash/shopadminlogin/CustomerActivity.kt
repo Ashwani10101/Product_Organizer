@@ -17,17 +17,46 @@ class CustomerActivity : AppCompatActivity()
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdaptor: RecyclerviewAdaptorCustomer
     private lateinit var btnAdd: Button
-    private lateinit var btnRemove: Button
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customer)
         initLayout()
-
     }
 
-    private fun initRecycleview()
+
+
+    var count = 0
+    private fun initLayout()
+    {
+        recyclerView = findViewById<RecyclerView>(R.id.customerActivity_recycleview)
+        btnAdd  = findViewById<Button>(R.id.customerActivity_btnAdd)
+        recyclerAdaptor = RecyclerviewAdaptorCustomer()
+        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
+
+        recyclerView.adapter = recyclerAdaptor
+
+        btnAdd.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                val customer = CustomerEntity()
+                customer.name = "Name $count"
+                count++
+                customer.phone = getRandomPhoneNumber()
+                customer.address = "Address : 244, A-Block, Sector-50, Noida, U.P., INDIA, EARTH(3rd), Sun(C-137), Orion Arm, Milky Way,Virgo Super-cluster, Laniakea Mega-cluster"
+                customer.orderType = "Home Delivery"
+                customer.orderDetails = "20kg Aashirvaad atta[1],200ml Coconut oil[1]"
+                MainActivity.myDatabase!!.customerDao().addNewCustomer(customer)
+                CoroutineScope(Dispatchers.Main).launch {
+                    recyclerAdaptor.addCustomer(customer,0)
+                    recyclerView.scrollToPosition(0)
+                }
+
+            }
+        }
+        initRecyclerview()
+    }
+
+    private fun initRecyclerview()
     {
         CoroutineScope(Dispatchers.IO).launch {
             val c = MainActivity.myDatabase!!.customerDao().customers()
@@ -37,43 +66,6 @@ class CustomerActivity : AppCompatActivity()
                 recyclerAdaptor.notifyDataSetChanged()
             }
         }
-
-
-
-    }
-
-    var count = 0
-    private fun initLayout()
-    {
-        recyclerView = findViewById<RecyclerView>(R.id.customerActivity_recycleview)
-        btnAdd  = findViewById<Button>(R.id.customerActivity_btnAdd)
-        btnRemove = findViewById<Button>(R.id.customerActivity_btnRemove)
-
-        recyclerView.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-        recyclerAdaptor = RecyclerviewAdaptorCustomer()
-        recyclerView.adapter = recyclerAdaptor
-
-        btnAdd.setOnClickListener {
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val customer = CustomerEntity()
-                customer.name = "Name $count"
-                customer.phone = getRandomPhoneNumber()
-                customer.address = "Address : 244, A-Block, Sector-50, Noida, U.P., INDIA, EARTH(3rd), Sun(C-137), Orion Arm, Milky Way,Virgo Super-cluster, Laniakea Mega-cluster"
-                customer.orderType = "Home Delivery"
-                customer.orderDetails = "20kg Aashirvaad atta[1],200ml Coconut oil[1]"
-                MainActivity.myDatabase!!.customerDao().addNewCustomer(customer)
-
-                recyclerAdaptor.addCustomer(customer,recyclerAdaptor.itemCount)
-            }
-
-        }
-
-        btnRemove.setOnClickListener {
-
-        }
-
-        initRecycleview()
     }
 
     private fun getRandomPhoneNumber(): String
@@ -82,5 +74,4 @@ class CustomerActivity : AppCompatActivity()
         return  long.toString()
 
     }
-
 }

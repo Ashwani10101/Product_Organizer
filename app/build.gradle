@@ -11,8 +11,8 @@ android {
         applicationId "com.ash.shopadminlogin"
         minSdkVersion 28
         targetSdkVersion 29
-        versionCode 10
-        versionName "0.1.0"
+        versionCode 12
+        versionName "0.1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

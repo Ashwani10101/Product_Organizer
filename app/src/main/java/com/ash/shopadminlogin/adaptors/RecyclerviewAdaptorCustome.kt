@@ -71,7 +71,7 @@ class RecyclerviewAdaptorCustomer() : RecyclerView.Adapter<RecyclerviewAdaptorCu
         private val customerNumber: TextView = view.findViewById<TextView>(R.id.textView_CustomerNumber)
         private val customerAddress: TextView = view.findViewById<TextView>(R.id.textView_CustomerAddress)
         private val customerOrderType: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrdertype)
-        private val customerOrderDetails: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrderDetails)
+       private val customerOrderDetails: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrderDetails)
 
         fun bindData(customerEntity: CustomerEntity)
         {

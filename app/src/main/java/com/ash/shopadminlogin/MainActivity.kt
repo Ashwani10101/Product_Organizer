@@ -20,9 +20,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import com.ash.shopadminlogin.adaptors.MainRecycleViewAdaptor
 import com.ash.shopadminlogin.database.MyDatabase
 import com.ash.shopadminlogin.database.ProductEntity
-import com.ash.shopadminlogin.adaptors.MainRecycleViewAdaptor
 import com.facebook.stetho.Stetho
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -58,11 +58,13 @@ class MainActivity : AppCompatActivity()
         setSupportActionBar(toolbar_MainActivity)
         Stetho.initializeWithDefaults(applicationContext) //Database Browser
 
-        initDrawer()
+
+        initSharePreferences()
         initDatabase()
+        initDrawer()
         initSpinner()
         initRecycleView()
-        initSharePreferences()
+
 
     }
 
@@ -96,8 +98,8 @@ class MainActivity : AppCompatActivity()
         drawer.addDrawerListener(toggle)
         toggle.syncState()
 
-        mainActivity_textviewDeliverys.setOnClickListener {
-            val intent = Intent(this,CustomerActivity::class.java)
+        mainActivity_DrawerDeliverys.setOnClickListener {
+            val intent = Intent(this, CustomerActivity::class.java)
             startActivity(intent)
         }
     }
