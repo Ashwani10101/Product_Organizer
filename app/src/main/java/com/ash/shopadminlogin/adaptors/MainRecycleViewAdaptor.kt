@@ -15,17 +15,17 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MainRecycleViewAdaptor () : RecyclerView.Adapter<MainRecycleViewAdaptor.MyViewHolder>(), Filterable
+class MainRecycleViewAdaptor : RecyclerView.Adapter<MainRecycleViewAdaptor.MyViewHolder>(), Filterable
 {
 
 
     private val productList = ArrayList<ProductEntity>()
-    private var productListAll= ArrayList<ProductEntity>()// Used for filtering in search bar
+    private var productListAll = ArrayList<ProductEntity>()// Used for filtering in search bar
 
     fun addProductList(productEntityList: ArrayList<ProductEntity>)
     {
         productList.addAll(productEntityList)
-        productListAll = ArrayList<ProductEntity>().apply { addAll(productEntityList) }
+        productListAll.addAll(productEntityList) //= ArrayList<ProductEntity>().apply { addAll(productEntityList) }
         notifyDataSetChanged()
     }
 
@@ -50,28 +50,27 @@ class MainRecycleViewAdaptor () : RecyclerView.Adapter<MainRecycleViewAdaptor.My
 
     fun clear()
     {
-       productList.clear()
-       productListAll.clear()
+        productList.clear()
+        productListAll.clear()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.main_card_product,
-            parent,
-            false
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder
+    {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.main_card_product, parent, false)
         return MyViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       return holder.bindData(productList[position])
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int)
+    {
+        return holder.bindData(productList[position])
     }
 
-    override fun getItemCount(): Int {
+    override fun getItemCount(): Int
+    {
         return productList.size
     }
 
-    inner class MyViewHolder(view: View) :RecyclerView.ViewHolder(view)
+    inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view)
     {
         private val productImage: ImageView = view.findViewById<ImageView>(R.id.imageView_ProductImage)
         private val productName: TextView = view.findViewById<TextView>(R.id.textView_ProductName)
@@ -81,7 +80,7 @@ class MainRecycleViewAdaptor () : RecyclerView.Adapter<MainRecycleViewAdaptor.My
 
         fun bindData(product: ProductEntity)
         {
-            if(product.image != null)
+            if (product.image != null)
             {
                 productImage.setImageBitmap(product.image)
             } else
@@ -113,24 +112,19 @@ class MainRecycleViewAdaptor () : RecyclerView.Adapter<MainRecycleViewAdaptor.My
                 val filterList = ArrayList<ProductEntity>()
 
 
-                if (charSequence==null||charSequence.toString().isEmpty()||charSequence.toString()=="")
+                if (charSequence == null || charSequence.toString().isEmpty() || charSequence.toString() == "")
                 {
                     filterList.addAll(productListAll)
-                }else
+                } else
                 {
-                    for(productEntity in productListAll)
+                    for (productEntity in productListAll)
                     {
-                        if(productEntity.name.toLowerCase().trim().contains(
-                                charSequence.toString().toLowerCase().trim()
-                            ) ||
-                            productEntity.details.toLowerCase().trim().contains(
-                                charSequence.toString().toLowerCase().trim()
-                            ))
+                        if (productEntity.name.toLowerCase().trim().contains(charSequence.toString().toLowerCase().trim()) || productEntity.details.toLowerCase().trim().contains(charSequence.toString().toLowerCase().trim()))
                         {
                             filterList.add(productEntity)
                         }
 
-                        if(productEntity.category.toLowerCase().trim().contains(charSequence.toString().toLowerCase().trim()))
+                        if (productEntity.category.toLowerCase().trim().contains(charSequence.toString().toLowerCase().trim()))
                         {
                             filterList.add(productEntity)
                         }
@@ -148,8 +142,8 @@ class MainRecycleViewAdaptor () : RecyclerView.Adapter<MainRecycleViewAdaptor.My
             //Run in UI thread
             override fun publishResults(constraint: CharSequence?, filterResult: FilterResults?)
             {
-                productList .clear()
-                productList .addAll(filterResult!!.values as Collection<ProductEntity>)
+                productList.clear()
+                productList.addAll(filterResult!!.values as Collection<ProductEntity>)
                 notifyDataSetChanged()
             }
         }

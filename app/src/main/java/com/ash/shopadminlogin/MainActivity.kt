@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -20,34 +21,51 @@ import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
-import com.ash.shopadminlogin.adaptors.MainRecycleViewAdaptor
+import com.ash.shopadminlogin.adaptors.MainRecycleViewAdaptorFirebase
 import com.ash.shopadminlogin.database.MyDatabase
-import com.ash.shopadminlogin.database.ProductEntity
+import com.ash.shopadminlogin.firebase.Product
+import com.ash.shopadminlogin.interfaces.MainRecycleViewInterface
+import com.ash.shopadminlogin.viewModels.CustomerViewModel
+import com.ash.shopadminlogin.viewModels.ProductViewModel
 import com.facebook.stetho.Stetho
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MainActivity : AppCompatActivity()
+class MainActivity : AppCompatActivity(),MainRecycleViewInterface
 {
 
-    private lateinit var recyclerviewAdaptor: MainRecycleViewAdaptor
+    private lateinit var recyclerviewAdaptor: MainRecycleViewAdaptorFirebase
     private lateinit var spinner: Spinner
     private lateinit var searchView: SearchView //SearchView query needed by fragment tab change listener
     private val sharedPrefFile = "kotlinsharedpreference"
 
+    private lateinit var productViewModel: ProductViewModel
+    private lateinit var customerViewModel: CustomerViewModel
+
     companion object
     {
-        val ALL_CATEGORYS = "-ALL-,ATTA,MASALE,GRAINS,PULSES,RICE,DRY FRUITS,SWEETNERS,SATTO,OTHERS"
+        val ALL_CATEGORYS = "All, Atta, Masale, Grains, Pulses, Rice, Dry Fruits, Sweetners, Satto, Others"
 
         val ADD_NEW_PRODUCT = 100
 
-        var myDatabase: MyDatabase? = null
+        //val firebaseStorageRef = FirebaseStorage.getInstance().reference
+        val firebaseStorageRefAllProductImages = FirebaseStorage.getInstance().reference.child("product_images")
+
+      //  var firebaseDatabaseRef = FirebaseDatabase.getInstance().reference
+        var firebaseDatabaseRefAllProducts = FirebaseDatabase.getInstance().reference.child("AllProducts")
+        var firebaseDatabaseRefAllCategory = FirebaseDatabase.getInstance().reference.child("AllCategory")
+
+
+       var myDatabase: MyDatabase? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -60,12 +78,93 @@ class MainActivity : AppCompatActivity()
 
 
         initSharePreferences()
-        initDatabase()
+        //initDatabase()
         initDrawer()
         initSpinner()
+        Handler().postDelayed({ initFirebase() },500)
         initRecycleView()
 
 
+    }
+
+
+    private fun initFirebase()
+    {
+
+        firebaseDatabaseRefAllProducts.orderByKey().addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?)
+            {
+
+                val product = snapshot.getValue(Product::class.java)
+
+                recyclerviewAdaptor.addProduct(product!!)
+                reycleviewMain.smoothScrollToPosition(recyclerviewAdaptor.itemCount-1)
+
+
+
+                /*val url = firebaseStorageRefAllProductImages.child("${product!!.key}.jpg").path
+                 show(url)
+                 firebaseStorageRefAllProductImages.child("${product.key}.jpg").downloadUrl.addOnCompleteListener {
+                 val fileLink = it.result
+                 show("URL : ${fileLink.toString()}")
+                 product.image =  fileLink//bitmap//getBitmapFromURL(fileLink.toString())
+
+                }*/
+        }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?)
+            {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot)
+            {
+               val product = snapshot.getValue(Product::class.java)
+                recyclerviewAdaptor.removeProduct(product!!)
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?)
+            {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError)
+            {
+                TODO("Not yet implemented")
+            }
+        })
+
+
+    }
+
+    fun getBitmapFromURL(src: String?): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+            connection.doInput = true
+            connection.connect()
+            val input: InputStream = connection.inputStream
+            BitmapFactory.decodeStream(input)
+        } catch (e: IOException) {
+            // Log exception
+            null
+        }
+    }
+
+    private fun initRecycleView()
+    {
+        recyclerviewAdaptor = MainRecycleViewAdaptorFirebase(this)
+        reycleviewMain.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        reycleviewMain.adapter = recyclerviewAdaptor
+        reycleviewMain.setHasFixedSize(true)
+
+
+/*        productViewModel = ViewModelProvider(this).get(ProductViewModel::class.java)
+        productViewModel.getAllProducts()!!.observe(this, {
+            recyclerviewAdaptor.addProductList(ArrayList(it))
+            showToast("Working")
+        })*/
+        reycleviewMain.smoothScrollToPosition(0)
     }
 
     private fun initSharePreferences()
@@ -77,7 +176,7 @@ class MainActivity : AppCompatActivity()
         if (isFirst)
         {
             Handler().postDelayed({
-                refresh()
+//            refresh()
             }, 1000)
             val editor: SharedPreferences.Editor = sharedPreferences.edit()
             editor.putBoolean("isFirstTimeInstall", false)
@@ -99,7 +198,7 @@ class MainActivity : AppCompatActivity()
         toggle.syncState()
 
         mainActivity_DrawerDeliverys.setOnClickListener {
-            val intent = Intent(this, CustomerActivity::class.java)
+            val intent = Intent(this, DeliveryActivity::class.java)
             startActivity(intent)
         }
     }
@@ -110,7 +209,7 @@ class MainActivity : AppCompatActivity()
         myDatabase = Room.databaseBuilder(applicationContext, MyDatabase::class.java, "ProductDatabase").build()
     }
 
-    private fun initRecycleView()
+/*    private fun initRecycleView()
     {
         recyclerviewAdaptor = MainRecycleViewAdaptor()
 
@@ -139,7 +238,7 @@ class MainActivity : AppCompatActivity()
             recyclerviewAdaptor.addProductList(productList)
         }
 
-    }
+    }*/
 
     private fun initSpinner()
     {
@@ -208,25 +307,28 @@ class MainActivity : AppCompatActivity()
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode)
+
+        if(data !=null)
         {
-            ADD_NEW_PRODUCT ->
+            when (requestCode)
             {
-
-                //User
-                val productEntity: ProductEntity? = data?.getParcelableExtra("PRODUCT")
-                if (productEntity != null)
+                ADD_NEW_PRODUCT ->
                 {
-                    productEntity.image = Helper.getThumbnail(applicationContext, productEntity.imageID.toString())
 
-                    recyclerviewAdaptor.addProduct(productEntity, recyclerviewAdaptor.itemCount)
-                    CoroutineScope(Dispatchers.IO).launch {
-                        myDatabase!!.productDao().addNewProduct(productEntity)
-                    }
+                    //CustomerOrder
+                    val productKey = data.getStringExtra("KEY")
+
+
+//                    productViewModel.addProduct(productEntity)
+//                    recyclerviewAdaptor.addProduct(productEntity, recyclerviewAdaptor.itemCount)
+
                 }
             }
         }
+
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean
     {
@@ -243,7 +345,7 @@ class MainActivity : AppCompatActivity()
 
             override fun onQueryTextChange(query: String?): Boolean
             {   //Coroutine added
-                if (query.toString().isNotEmpty() || query.toString() != "")
+                if (query != null || query.toString().isNotEmpty())
                 {
                     showToast(query.toString())
                     recyclerviewAdaptor.filter.filter(query)
@@ -272,19 +374,21 @@ class MainActivity : AppCompatActivity()
             R.id.MainMenuRefresh ->
             {
 
-                showToast("Auto Loader Tool Loaded Data!")
-                refresh()
+//                showToast("Auto Loader Tool Loaded Data!")
+//                refresh()
                 return true
             }
 
             R.id.MainMenuClearAll ->
             {
 
+/*
                 showToast("All Clear")
                 recyclerviewAdaptor.clear()
                 CoroutineScope(Dispatchers.IO).launch {
                     myDatabase!!.productDao().deleteAll()
                 }
+*/
 
 
                 return true
@@ -310,7 +414,7 @@ class MainActivity : AppCompatActivity()
 
     }
 
-    private fun refresh()
+/*    private fun refresh()
     {
 
         // val data = "M.P SHARBATI DELUXE ATTA ; ATTA ; 40 ; No Details@MP SHARBATI ATTA ; ATTA ; 38 ; No Details@HARYANA DESI ATTA ; ATTA ; 30 ; No Details@NORMAL FRESH ATTA ; ATTA ; 24 ; No Details@MULTI GRAIN ATTA ; ATTA ; 50 ; No Details@JO ATTA (BARLEY) ; ATTA ; 80 ; No Details@JWAR ATM CHANA ATTA SOYABEAN ATTA ; ATTA ; 80 ; No Details@MAKKI ATTA ; ATTA ; 40 ; No Details@BAJRA ATTA ; ATTA ; 30 ; No Details@RICE POWDER ; ATTA ; 40 ; No Details@URAD DAL ATTA ; ATTA ; 140 ; No Details@MOONS DAL ATTA ; ATTA ; 130 ; No Details@RAGI ATTA ; ATTA ; 80 ; No Details@BESAN ; ATTA ; 90 ; No Details@BESAN (MOTA) ; ATTA ; 90 ; No Details@MAIDA ; ATTA ; 40 ; No Details@SUJI ; ATTA ; 40 ; No Details@DALIA ; ATTA ; 40 ; No Details@OATS ; ATTA ; 40 ; No Details@ARHAR (TOOK) ; PULSES ; 79 ; No Details@MOONS DHULI ; PULSES ; 82 ; No Details@MOONS CHILKA ; PULSES ; 80 ; No Details@MOONS SABUT ; PULSES ; 78 ; No Details@URAD DHULI ; PULSES ; 110 ; No Details@URAD CHILKA ; PULSES ; 87 ; No Details@SABUT MASUR BLACK ; PULSES ; 43 ; No Details@MASUR MALKA ; PULSES ; 53 ; No Details@RAJMA CHITRA, JAMMU ; PULSES ; 52 ; No Details@CHANA DAL ; PULSES ; 53 ; No Details@MIX DAL ; PULSES ; 86 ; No Details@MOTH DAL ; PULSES ; 24 ; No Details@LAL LOBIA, SAFED LOBIA ; PULSES ; 245 ; No Details@MATAR ; PULSES ; 23 ; No Details@MASUR DALLI ; PULSES ; 26 ; No Details@KALA CHANA ; PULSES ; 73 ; No Details@BULI CHANA ; PULSES ; 73 ; No Details@SABUT GARAM MASALA MIND MOTO ; MASALA ; 78 ; No Details@JEERA ; MASALA ; 75 ; No Details@LONG ; MASALA ; 783 ; No Details@KALANOJI ; MASALA ; 34 ; No Details@JAI FAL,JAVITRI ; MASALA ; 43 ; No Details@SUPARI ; MASALA ; 65 ; No Details@TEJ PATTA , KADI PATTA ; MASALA ; 756 ; No Details@KALI MIRCH SABUT ; MASALA ; 768 ; No Details@HALDI, DHANIA, AMCHOOR ; MASALA ; 54 ; No Details@LAL MIRCH SABUT ; MASALA ; 44 ; No Details@SARSO YELLOW, BLACK ; MASALA ; 43 ; No Details@RAI, METH' DANA ; MASALA ; 43 ; No Details@SAUNF MOT', BAREEK ; MASALA ; 53 ; No Details@ORIGANOS ; MASALA ; 36 ; No Details@IMLI,SAUNTH,GOOND ; MASALA ; 63 ; No Details@EXTRA LONG GRAIN 1121 XXXL BASMATI ROYAL RICE ; RICE ; 57 ; No Details@LONG GRAIN 1121 XXL BASMATI DELIGHT RICE ; RICE ; 57 ; No Details@PREMIUM 1121 XL BASMATI RICE ; RICE ; 57 ; No Details@ROZANA BASMATI RICE ; RICE ; 57 ; No Details@BASMATI TIBAR(1121) ; RICE ; 57 ; No Details@BASMATI DUBAR (1121) ; RICE ; 57 ; No Details@SAUNA MASORI RICE ; RICE ; 57 ; No Details@PARMAL DOUBLE SILKY RICE ; RICE ; 57 ; No Details@GOLDEN SELLA XXXL 1121 ; RICE ; 57 ; No Details@GOLDEN SELLA XXL 1121 ; RICE ; 57 ; No Details@BASMATI SUPER MOGRA ; RICE ; 57 ; No Details@IDLI RICE ; RICE ; 57 ; No Details@BROWN RICE ; RICE ; 57 ; No Details@KAJU ; DRY FRUITS ; 76 ; No Details@BADAM ; DRY FRUITS ; 76 ; No Details@PISTA,GREEN PISTA ; DRY FRUITS ; 76 ; No Details@AKROT GIRT, SABUT ; DRY FRUITS ; 76 ; No Details@KHUMANI ANJEER ; DRY FRUITS ; 76 ; No Details@KHARBUJ MAGAJ , TARBOJ MAGAJ ; DRY FRUITS ; 76 ; No Details@CHUWARA ; DRY FRUITS ; 76 ; No Details@GOLA, GOLA POWDER ; DRY FRUITS ; 76 ; No Details@KHASKHAS ; DRY FRUITS ; 76 ; No Details@BAJRA JWAR; GRAINS ; 89 ; No Details@MAKKA .10(BARLEY) ; GRAINS ; 89 ; No Details@RAGI ; GRAINS ; 89 ; No Details@FLEX SEEDS(ALSI) ; GRAINS ; 89 ; No Details@SATANAJ MIX ; GRAINS ; 89 ; No Details@WHEAT SOYABEAN ; GRAINS ; 89 ; No Details@VINEGAR ; OTHERS ; 90; No Details@BHUNA CHANA,CHILKA CHANA STARCH ; OTHERS ; 90; No Details@BOONDI,SOYA BARI ; OTHERS ; 90; No Details@BAKERY BISCUITS , NAMKEENS ; OTHERS ; 90; No Details@PASTA, MACRON'@MITHASODA, BAKING POWDER VERMICELLI,MURMURE ; OTHERS ;45 ; No Details@CORN FLAKES, AMERICAN CORN POHA MOTA, BAREEK ; OTHERS ;45 ; No Details@MOONS FALI DANA ; OTHERS ;45 ; No Details@ANARDANA,SABUT DANA ARAROT ; OTHERS ;45 ; No Details@URAD BARI, MOONS BARI ; OTHERS ;45 ; No Details@TATA SALT ; SALT ; 72 ; No Details@LITE SALT ; SALT ; 72 ; No Details@BLACK SALT ; SALT ; 72 ; No Details@ROCK SALT (SENDHA) ; SALT ; 72 ; No Details@DOUBLE FILTER PREMIUM SUGAR BURR ; SWEETNERS ; 56; No Details@KARARA ; SWEETNERS ; 56; No Details@GUD ; SWEETNERS ; 56; No Details@SHAKKAR ; SWEETNERS ; 56; No Details"
@@ -337,7 +441,7 @@ class MainActivity : AppCompatActivity()
                 productEntityList.add(productEntity)
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    myDatabase!!.productDao().addNewProduct(productEntity)
+                    myDatabase!!.productDao().insert(productEntity)
                     CoroutineScope(Dispatchers.Main).launch {
                         recyclerviewAdaptor.addProduct(productEntity, 0)
                     }
@@ -355,7 +459,7 @@ class MainActivity : AppCompatActivity()
         // recyclerviewAdaptor.addProductList(productEntityList)
 
 
-    }
+    }*/
 
     private fun getColorBitmap(): Bitmap
     {
@@ -388,6 +492,22 @@ class MainActivity : AppCompatActivity()
         textView.textSize = 15f
         textView.setTextColor(Color.WHITE)
         snackbar.show()
+    }
+
+    override fun onCardClick(product: Product)
+    {
+
+    }
+
+    override fun onEditCardClick(product: Product)
+    {
+
+    }
+
+    override fun onDeleteCardClick(product: Product)
+    {
+
+        firebaseDatabaseRefAllProducts.child(product.key).removeValue()
     }
 
 }

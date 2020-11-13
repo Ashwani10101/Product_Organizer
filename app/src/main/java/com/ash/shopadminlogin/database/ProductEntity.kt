@@ -1,6 +1,7 @@
 package com.ash.shopadminlogin.database
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 
@@ -8,6 +9,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import java.net.URI
 
 @Entity //Table
 class ProductEntity() :Parcelable
@@ -28,6 +30,8 @@ class ProductEntity() :Parcelable
 
     @Ignore
     var image: Bitmap? = null
+    @Ignore
+    var imageUri: String? = null
 
     constructor(parcel: Parcel) : this() {
         id = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -36,6 +40,7 @@ class ProductEntity() :Parcelable
         details = parcel.readString().toString()
         category = parcel.readString().toString()
         imageID = parcel.readString()
+        imageUri = parcel.readString()
         image = parcel.readParcelable(Bitmap::class.java.classLoader)
     }
 
@@ -46,6 +51,7 @@ class ProductEntity() :Parcelable
         parcel.writeString(details)
         parcel.writeString(category)
         parcel.writeString(imageID)
+        parcel.writeString(imageUri)
         parcel.writeParcelable(image, flags)
     }
 

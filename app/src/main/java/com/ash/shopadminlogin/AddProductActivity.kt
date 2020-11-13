@@ -7,18 +7,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.media.ThumbnailUtils
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.ash.shopadminlogin.database.ProductEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
+import com.ash.shopadminlogin.firebase.Product
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -40,6 +37,7 @@ class AddProductActivity : AppCompatActivity() {
 
 
     private var productImage : Bitmap? = null
+    private var imageUri: Uri? = null
 
 
     //Access Codes
@@ -94,23 +92,102 @@ class AddProductActivity : AppCompatActivity() {
     private fun saveProduct() {
 
 
-        val productEntity = ProductEntity()
-        productEntity.name = editProductName.text.toString()
-        productEntity.price = editProductPrice.text.toString()
-        productEntity.details = editProductDetails.text.toString()
-        productEntity.category = spinnerCategory.selectedItem.toString()
-        productEntity.imageID =  saveImage()
+        val product = Product()
+        if(editProductName.text.isEmpty())
+        {
+            editProductName.error = "Please enter name"
+        } else
+        {
+            product.name = editProductName.text.toString()
+        }
 
-        intent.putExtra("PRODUCT",productEntity)
-        setResult(Activity.RESULT_OK, intent)
+        if( editProductPrice.text.isEmpty())
+        {
+            editProductPrice.error = "Please enter price"
+        } else
+        {
+            product.price = editProductPrice.text.toString()
+        }
+        if(editProductDetails.text.isEmpty())
+        {
+            editProductDetails.error = "Please add details"
+        } else
+        {
+            product.details = editProductDetails.text.toString()
+        }
 
-        finish()
+        product.category = spinnerCategory.selectedItem.toString()
+
+
+        //Uploading to Firebase
+
+        if(product.name.trim() !="" && product.price.trim() != "" &&  product.details.trim() != "" && product.category.trim() !="")
+        {
+
+            val timestamp = getNewDateStamp()
+
+            val productName =  product.name.replace("\\s".toRegex(), "")
+            val productKey = "$productName@$timestamp".toLowerCase()
+            //Upload Details
+
+            product.key = productKey
+            MainActivity.firebaseDatabaseRefAllProducts.child(productKey).setValue(product)
+
+            finish()
+
+
+          /*  //Upload Image
+            if(imageUri!=null)
+            {
+
+                val source = ImageDecoder.createSource(this.contentResolver,imageUri!!)
+                val _bitmap = ImageDecoder.decodeBitmap(source)
+
+                val byteArrayOutputStream =  ByteArrayOutputStream()
+               // val scaledBitmap = ThumbnailUtils.extractThumbnail( _bitmap, 100, 100)
+
+                _bitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream)
+               // _bitmap.compress(scaledBitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+
+                val data = byteArrayOutputStream.toByteArray()
+
+                val riversRef  = MainActivity.firebaseStorageRefAllProductImages.child("$productKey.jpg")
+                riversRef.putBytes(data)
+                    .addOnSuccessListener {
+                        finish()
+                    }.addOnFailureListener {
+                        showToast("Image uploading failed!")
+                    }
+
+
+            } else
+            {
+                showToast("Please select a image!")
+            }*/
+
+
+
+
+
+        } else
+        {
+           showToast("Incomplete information!")
+        }
+
+
+
+
+
+/*        intent.putExtra("PRODUCT",productEntity)
+        setResult(Activity.RESULT_OK, intent)*/
+
+
 
     }
 
 
 
-    private fun saveImage() : String
+/*    private fun saveImage() : String
     {
 
         val uniqueID = getNewDateStamp()
@@ -127,12 +204,12 @@ class AddProductActivity : AppCompatActivity() {
         fos.flush()
 
         return uniqueID
-    }
+    }*/
 
-    fun getNewDateStamp() : String
+    private fun getNewDateStamp() : String
     {
         //Time stamp
-        val sdf = SimpleDateFormat("yyyy-MM-dd_HH.mm.ss.SSS", Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS", Locale.getDefault())
         return sdf.format(Date())
     }
 
@@ -230,16 +307,18 @@ class AddProductActivity : AppCompatActivity() {
 
     private fun gotResultImage(data: Intent?)
     {
-       val imageUri= data?.data
+        imageUri= data?.data
 
         if(imageUri!=null)
         {
-            val source = ImageDecoder.createSource(this.contentResolver,imageUri)
-            productImage = ImageDecoder.decodeBitmap(source)
-            imageViewProduct.setImageBitmap(productImage)
+
+            val source = ImageDecoder.createSource(this.contentResolver,imageUri!!)
+            //productImage = ImageDecoder.decodeBitmap(source)
+
+            imageViewProduct.setImageBitmap(ImageDecoder.decodeBitmap(source))
         } else
         {
-            showToast("NO Image Selected")
+            showToast("No image Selected")
         }
 
 

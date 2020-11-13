@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MainPageTheme">
-        <activity android:name=".CustomerActivity">
+        <activity android:name=".DeliveryActivity">
 
         </activity>
         <activity android:name=".AdminLoginActivity"></activity>

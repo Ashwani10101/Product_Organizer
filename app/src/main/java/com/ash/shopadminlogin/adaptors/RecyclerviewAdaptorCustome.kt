@@ -5,33 +5,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.ash.shopadminlogin.database.CustomerEntity
+import com.ash.customerapp.models.CustomerOrder
 import com.ash.shopadminlogin.R
 import kotlin.collections.ArrayList
 
 
-class RecyclerviewAdaptorCustomer() : RecyclerView.Adapter<RecyclerviewAdaptorCustomer.MyViewHolder>()
+class RecyclerviewAdaptorCustomerOrder() : RecyclerView.Adapter<RecyclerviewAdaptorCustomerOrder.MyViewHolder>()
 {
+    
+    
 
+    private val customerList = ArrayList<CustomerOrder>()
+    private var customerListAll = ArrayList<CustomerOrder>()// Used for filtering in search bar
 
-    private val customerList = ArrayList<CustomerEntity>()
-    private var customerListAll = ArrayList<CustomerEntity>()// Used for filtering in search bar
-
-    fun addCustomerList(CustomerEntityList: ArrayList<CustomerEntity>)
+    fun addCustomerList(customerOrderList: ArrayList<CustomerOrder>)
     {
-        customerList.addAll(CustomerEntityList)
-        customerListAll = ArrayList<CustomerEntity>().apply { addAll(CustomerEntityList) }
+        customerList.addAll(customerOrderList)
+        customerListAll = ArrayList<CustomerOrder>().apply { addAll(customerOrderList) }
     }
 
 
-    fun addCustomer(customer: CustomerEntity, position: Int)
+    fun addCustomer(customer: CustomerOrder, position: Int)
     {
         customerList.add(position, customer)
         customerListAll.add(position, customer)
         notifyItemInserted(position)
     }
 
-    fun deleteCustomer(customer: CustomerEntity, position: Int)
+    fun deleteCustomer(customer: CustomerOrder, position: Int)
     {
         customerList.remove(customer)
         customerListAll.removeAt(position)
@@ -43,10 +44,11 @@ class RecyclerviewAdaptorCustomer() : RecyclerView.Adapter<RecyclerviewAdaptorCu
         notifyItemRemoved(position)
     }
 
-    fun clear()
+    fun removeAll()
     {
         customerList.clear()
         customerListAll.clear()
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder
@@ -70,16 +72,15 @@ class RecyclerviewAdaptorCustomer() : RecyclerView.Adapter<RecyclerviewAdaptorCu
         private val customerName: TextView = view.findViewById<TextView>(R.id.textView_CustomerName)
         private val customerNumber: TextView = view.findViewById<TextView>(R.id.textView_CustomerNumber)
         private val customerAddress: TextView = view.findViewById<TextView>(R.id.textView_CustomerAddress)
-        private val customerOrderType: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrdertype)
+        //private val customerOrderType: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrdertype)
        private val customerOrderDetails: TextView = view.findViewById<TextView>(R.id.textView_CustomerOrderDetails)
 
-        fun bindData(customerEntity: CustomerEntity)
+        fun bindData(customerEntity: CustomerOrder)
         {
 
             customerName.text = customerEntity.name
             customerNumber.text = customerEntity.phone
             customerAddress.text = customerEntity.address
-            customerOrderType.text = customerEntity.orderType
             customerOrderDetails.text = customerEntity.orderDetails
 
         }
